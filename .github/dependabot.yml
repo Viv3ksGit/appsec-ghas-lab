@@ -4,6 +4,8 @@ updates:
     directory: /app
     schedule:
       interval: weekly
+    cooldown:          # don't adopt brand-new releases (malicious-publish window)
+      default-days: 7
     groups:
       python-security:
         applies-to: security-updates
@@ -14,6 +16,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:          # don't adopt brand-new releases (malicious-publish window)
+      default-days: 7
     groups:
       actions:
         patterns: ["*"]
@@ -22,8 +26,12 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:          # don't adopt brand-new releases (malicious-publish window)
+      default-days: 7
 
   - package-ecosystem: terraform
     directory: /infra
     schedule:
       interval: weekly
+    cooldown:          # don't adopt brand-new releases (malicious-publish window)
+      default-days: 7

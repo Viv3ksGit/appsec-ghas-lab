@@ -12,13 +12,19 @@ echo "== Secret scanning + push protection"
 for feature in secret_scanning secret_scanning_push_protection \
                secret_scanning_non_provider_patterns secret_scanning_validity_checks; do
   echo "{\"security_and_analysis\":{\"$feature\":{\"status\":\"enabled\"}}}" \
-    | try "$feature" gh api -X PATCH "repos/$REPO" --input - --silent
+    | gh api -X PATCH "repos/$REPO" --input - --silent 2>/dev/null || true
+  # The API can accept the PATCH yet leave a licence-gated feature disabled, so verify.
+  status=$(gh api "repos/$REPO" --jq ".security_and_analysis.$feature.status // \"n/a\"")
+  echo "  $feature: $status"
 done
 
 echo "== Dependabot alerts + security updates, private vulnerability reporting"
 try dependabot-alerts gh api -X PUT "repos/$REPO/vulnerability-alerts" --silent
 try dependabot-security-updates gh api -X PUT "repos/$REPO/automated-security-fixes" --silent
 try private-vuln-reporting gh api -X PUT "repos/$REPO/private-vulnerability-reporting" --silent
+
+echo "== Default GITHUB_TOKEN: read-only, cannot approve PRs"
+try workflow-token-read-only gh api -X PUT "repos/$REPO/actions/permissions/workflow"   -f default_workflow_permissions=read -F can_approve_pull_request_reviews=false --silent
 
 echo "== Ruleset: PR required, status checks, and CodeQL merge protection on main"
 gh api -X POST "repos/$REPO/rulesets" --input - --silent <<'JSON'
@@ -56,4 +62,3 @@ echo
 echo "Manual steps (UI only):"
 echo "  1. Settings > Secrets and variables > Actions: add ANTHROPIC_API_KEY (for AI triage)"
 echo "  2. Settings > Code security: add a custom secret scanning pattern, e.g. lab-[a-z]+-secret-[a-z-]+"
-echo "  3. Settings > Actions > General: 'Read repository contents' default token permission"

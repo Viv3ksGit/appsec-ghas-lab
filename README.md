@@ -56,7 +56,7 @@ scripts/setup-ghas.sh <owner>/appsec-ghas-lab
 gh secret set ANTHROPIC_API_KEY        # enables the AI triage workflow
 ```
 
-See [docs/DEMO.md](docs/DEMO.md) for a 10-minute walkthrough.
+New to this? Read [docs/GUIDE.md](docs/GUIDE.md) (every concept, file and vulnerability explained), then [docs/SETUP.md](docs/SETUP.md) (from-zero setup) and [docs/DEMO.md](docs/DEMO.md) (hands-on).
 
 ## The AI triage design
 
