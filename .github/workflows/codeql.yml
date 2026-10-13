@@ -24,8 +24,10 @@ jobs:
         include:
           - language: python
             build-mode: none
+            config-file: ./.github/codeql/codeql-config.yml   # suite + custom query pack
           - language: actions   # CodeQL also scans the workflows themselves
             build-mode: none
+            config-file: ""   # default queries; the app-only path filter would hide .github/
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -35,7 +37,7 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
-          config-file: ./.github/codeql/codeql-config.yml
+          config-file: ${{ matrix.config-file }}
 
       - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
         with:
