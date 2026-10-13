@@ -1,5 +1,5 @@
 # Intentionally weak container: EOL base image, runs as root, no pinning by digest.
-FROM python:3.8-slim-buster
+FROM python:3.11-slim-buster
 
 ADD app/ /app
 WORKDIR /app
