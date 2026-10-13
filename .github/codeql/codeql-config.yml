@@ -1,0 +1,12 @@
+name: "AppSec lab CodeQL config"
+
+# security-extended = default suite + lower-precision / higher-recall security queries.
+# (security-and-quality would add maintainability noise; not what AppSec gates on.)
+queries:
+  - uses: security-extended
+  - uses: ./.github/codeql/custom-queries
+
+paths:
+  - app
+paths-ignore:
+  - "**/tests/**"

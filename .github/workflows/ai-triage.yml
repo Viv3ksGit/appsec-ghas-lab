@@ -1,0 +1,48 @@
+# Runs AFTER the scanners finish, so the alerts exist to be triaged.
+#
+# Security note: workflow_run executes in the default-branch context with access to
+# secrets. That's safe here ONLY because we never check out or execute PR code:
+# the triage script comes from main, and PR source is fetched via the API as data.
+# Checking out github.event.workflow_run.head_sha here would be a classic "pwn request".
+name: AI security triage
+
+on: # zizmor: ignore[dangerous-triggers] -- risk accepted: PR code is never checked out or executed (see header)
+  workflow_run:
+    workflows: ["CodeQL", "Third-party scanners (SARIF)"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ai-triage-${{ github.event.workflow_run.head_branch || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - run: pip install "anthropic==1.13.0"
+
+      - name: Triage alerts
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Passed via env, never interpolated into the script (avoids template injection).
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        run: python .github/scripts/ai_triage.py

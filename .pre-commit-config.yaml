@@ -1,0 +1,6 @@
+# Developer-side layer: catch secrets before they ever reach GitHub push protection.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks

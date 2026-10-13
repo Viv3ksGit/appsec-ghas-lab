@@ -1,0 +1,4 @@
+# Security-sensitive paths require AppSec review.
+/.github/            @Viv3ksGit
+/infra/              @Viv3ksGit
+/Dockerfile          @Viv3ksGit
