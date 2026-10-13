@@ -1,6 +1,6 @@
 # Intentionally outdated pins so Dependabot / dependency review / Trivy have real CVEs to report.
 Flask==2.0.1
-Werkzeug==2.0.1
+Werkzeug==3.1.9
 Jinja2==3.0.1
 itsdangerous==2.0.1
 click==8.0.1
