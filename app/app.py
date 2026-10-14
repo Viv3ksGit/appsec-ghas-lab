@@ -74,9 +74,9 @@ def fetch():
 
 @app.route("/greet")
 def greet():
-    # CWE-1336 / CWE-79: server-side template injection -> RCE
+    # Fixed: keep template constant; pass user input as context data
     name = request.args.get("name", "world")
-    return render_template_string("<h1>Hello " + name + "</h1>")
+    return render_template_string("<h1>Hello {{ name }}</h1>", name=name)
 
 
 @app.route("/session")
